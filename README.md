@@ -12,19 +12,21 @@ words.
 o Development Environment –
 
 Description of your development environment.
-computer OS: MacOs Intel
+ Computer OS: MacOs Intel
  Node JS version: v14.15.4
  MongoDB version: v4.4.4
  Editors used: Visual Studio Code
- 
 
 
 o Installation/Running Instructions – 
+ 
+ - clone repo: url: https://github.com/gravediggaz666/Final_Project
 
-Include any instructions on how to get the
-project up and running. Assume someone that doesn’t know how to run an
-Express or Node JS application. Give the steps from a cloned repository to install
-dependencies and start the application.
+- npm install && npm install --prefix client && npm run build --prefix client
+
+- npm start
+  
+  
 
 o Insights and Results – 
 
