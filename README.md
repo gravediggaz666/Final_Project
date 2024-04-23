@@ -12,8 +12,11 @@ words.
 o Development Environment –
 
 Description of your development environment.
-Include things like computer OS, Node JS version number, editors used, and any
-other details you think you should include about your environment.
+computer OS: MacOs Intel
+ Node JS version: v14.15.4
+ MongoDB version: v4.4.4
+ Editors used: Visual Studio Code
+ 
 
 
 o Installation/Running Instructions – 
