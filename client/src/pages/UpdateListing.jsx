@@ -171,4 +171,102 @@ export default function UpdateCar() {
             onChange={handleChange}
             value={formData.year}
           />
-        
+          <input
+            type='number'
+            placeholder='Price ($)'
+            className='border p-3 rounded-lg'
+            id='price'
+            min='0'
+            required
+            onChange={handleChange}
+            value={formData.price}
+          />
+          <select
+            id='condition'
+            className='border p-3 rounded-lg'
+            required
+            onChange={handleChange}
+            value={formData.condition}
+          >
+            <option value='New'>New</option>
+            <option value='Used'>Used</option>
+          </select>
+          <input
+            type='number'
+            placeholder='Mileage'
+            className='border p-3 rounded-lg'
+            id='mileage'
+            min='0'
+            required
+            onChange={handleChange}
+            value={formData.mileage}
+          />
+          <textarea
+            placeholder='Description'
+            className='border p-3 rounded-lg'
+            id='description'
+            required
+            onChange={handleChange}
+            value={formData.description}
+          />
+        </div>
+        <div className='flex flex-col flex-1 gap-4'>
+          <p className='font-semibold'>
+            Images:
+            <span className='font-normal text-gray-600 ml-2'>
+              The first image will be the cover (max 6)
+            </span>
+          </p>
+          <div className='flex gap-4'>
+            <input
+              onChange={(e) => setFiles(e.target.files)}
+              className='p-3 border border-gray-300 rounded w-full'
+              type='file'
+              id='images'
+              accept='image/*'
+              multiple
+            />
+            <button
+              type='button'
+              disabled={uploading}
+              onClick={handleImageSubmit}
+              className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
+            >
+              {uploading ? 'Uploading...' : 'Upload'}
+            </button>
+          </div>
+          <p className='text-red-700 text-sm'>
+            {imageUploadError && imageUploadError}
+          </p>
+          {formData.images.length > 0 &&
+            formData.images.map((url, index) => (
+              <div
+                key={url}
+                className='flex justify-between p-3 border items-center'
+              >
+                <img
+                  src={url}
+                  alt='car image'
+                  className='w-20 h-20 object-contain rounded-lg'
+                />
+                <button
+                  type='button'
+                  onClick={() => handleRemoveImage(index)}
+                  className='p-3 text-red-700 rounded-lg uppercase hover:opacity-75'
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          <button
+            disabled={loading || uploading}
+            className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
+          >
+            {loading ? 'Updating...' : 'Update Car Listing'}
+          </button>
+          {error && <p className='text-red-700 text-sm'>{error}</p>}
+        </div>
+      </form>
+    </main>
+  );
+}
