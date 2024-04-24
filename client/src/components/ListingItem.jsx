@@ -1,35 +1,54 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdLocationOn } from 'react-icons/md';
 
-export default function ListingItem({ listing }) {
+export default function Contact({ car }) {
+  const [seller, setSeller] = useState(null);
+  const [message, setMessage] = useState('');
+  
+  const onChange = (e) => {
+    setMessage(e.target.value);
+  };
+
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        const res = await fetch(`/api/user/${car.userRef}`);
+        const data = await res.json();
+        setSeller(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSeller();
+  }, [car.userRef]);
+  
   return (
-    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
-      <Link to={`/listing/${listing._id}`}>
-        <img
-          src={
-            listing.imageUrls[0] ||
-            ////
-          }
-          alt='listing cover'
-          className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
-        />
-        <div className='p-3 flex flex-col gap-2 w-full'>
-          <p className='truncate text-lg font-semibold text-slate-700'>
-            {listing.name}
+    <>
+      {seller && (
+        <div className='flex flex-col gap-2'>
+          <p>
+            Contact <span className='font-semibold'>{seller.username}</span>{' '}
+            for{' '}
+            <span className='font-semibold'>{car.make} {car.model}</span>
           </p>
-          <div className='flex items-center gap-1'>
-            <MdLocationOn className='h-4 w-4 text-green-700' />
-            <p className='text-sm text-gray-600 truncate w-full'>
-              {listing.address}
-            </p>
-          </div>
-          <p className='text-sm text-gray-600 line-clamp-2'>
-            {listing.description}
-          </p>
-          <p className='text-slate-500 mt-2 font-semibold '>
-            $
-            {listing.offer
-              ? listing.discountPrice.toLocaleString('en-US')
-              : listing.regularPrice.toLocaleString('en-US')}
-            {listing.type === 'rent' && ' / month'}
-          </p>
+          <textarea
+            name='message'
+            id='message'
+            rows='2'
+            value={message}
+            onChange={onChange}
+            placeholder='Enter your message here...'
+            className='w-full border p-3 rounded-lg'
+          ></textarea>
+
+          <Link
+            to={`mailto:${seller.email}?subject=Regarding ${car.make} ${car.model}&body=${message}`}
+            className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
+          >
+            Send Message          
+          </Link>
+        </div>
+      )}
+    </>
+  );
+}
