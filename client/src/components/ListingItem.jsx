@@ -1,54 +1,44 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaGasPump, FaCar, FaCalendarAlt } from 'react-icons/fa';
 
-export default function Contact({ car }) {
-  const [seller, setSeller] = useState(null);
-  const [message, setMessage] = useState('');
-  
-  const onChange = (e) => {
-    setMessage(e.target.value);
-  };
-
-  useEffect(() => {
-    const fetchSeller = async () => {
-      try {
-        const res = await fetch(`/api/user/${car.userRef}`);
-        const data = await res.json();
-        setSeller(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchSeller();
-  }, [car.userRef]);
-  
+export default function CarItem({ car }) {
   return (
-    <>
-      {seller && (
-        <div className='flex flex-col gap-2'>
-          <p>
-            Contact <span className='font-semibold'>{seller.username}</span>{' '}
-            for{' '}
-            <span className='font-semibold'>{car.make} {car.model}</span>
+    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
+      <Link to={`/car/${car._id}`}>
+        <img
+          src={
+            car.imageUrls[0] ||
+            'https://bringatrailer.com/wp-content/uploads/2020/02/1992_chevrolet_c1500_158324397444d6279D1E0BFE4-7EB1-4B15-93BC-CB61E7842546.jpeg' 
+          }
+          alt='car cover'
+          className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
+        />
+        <div className='p-3 flex flex-col gap-2 w-full'>
+          <p className='truncate text-lg font-semibold text-slate-700'>
+            {car.make} {car.model}
           </p>
-          <textarea
-            name='message'
-            id='message'
-            rows='2'
-            value={message}
-            onChange={onChange}
-            placeholder='Enter your message here...'
-            className='w-full border p-3 rounded-lg'
-          ></textarea>
-
-          <Link
-            to={`mailto:${seller.email}?subject=Regarding ${car.make} ${car.model}&body=${message}`}
-            className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
-          >
-            Send Message          
-          </Link>
+          <div className='flex items-center gap-1'>
+            <FaCar className='h-4 w-4 text-green-700' />
+            <p className='text-sm text-gray-600 truncate w-full'>
+              {car.year}
+            </p>
+          </div>
+          <p className='text-sm text-gray-600 line-clamp-2'>
+            {car.description}
+          </p>
+          <p className='text-slate-500 mt-2 font-semibold '>
+            ${car.price.toLocaleString('en-US')}
+          </p>
+          <div className='text-slate-700 flex gap-4'>
+            <div className='font-bold text-xs'>
+              {car.engine}
+            </div>
+            <div className='font-bold text-xs'>
+              {car.transmission}
+            </div>
+          </div>
         </div>
-      )}
-    </>
+      </Link>
+    </div>
   );
 }
