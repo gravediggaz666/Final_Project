@@ -2,40 +2,53 @@ import mongoose from 'mongoose';
 
 const listingSchema = new mongoose.Schema(
   {
-    name: {
+    make: {
       type: String,
       required: true,
     },
-    description: {
+    model: {
       type: String,
       required: true,
     },
-    address: {
-      type: String,
-      required: true,
-    },
-    regularPrice: {
+    year: {
       type: Number,
       required: true,
     },
-    discountPrice: {
+    mileage: {
       type: Number,
       required: true,
     },
-    type: {
+    price: {
+      type: Number,
+      required: true,
+    },
+    fuelType: {
       type: String,
       required: true,
     },
-    offer: {
-      type: Boolean,
-      required: true,
-    },
-    imageUrls: {
-      type: Array,
-      required: true,
-    },
-    userRef: {
+    transmission: {
       type: String,
+      required: true,
+    },
+    condition: {
+      type: String,
+      required: true,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    engineCapacity: {
+      type: Number,
+      required: true,
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
   },
