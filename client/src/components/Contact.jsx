@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Contact({ car }) {
-  const [seller, setSeller] = useState(null);
+export default function Contact({ listing }) {
+  const [seller, setseller] = useState(null);
   const [message, setMessage] = useState('');
-  
   const onChange = (e) => {
     setMessage(e.target.value);
   };
@@ -12,7 +11,7 @@ export default function Contact({ car }) {
   useEffect(() => {
     const fetchSeller = async () => {
       try {
-        const res = await fetch(`/api/user/${car.userRef}`);
+        const res = await fetch(`/api/user/${listing.userRef}`);
         const data = await res.json();
         setSeller(data);
       } catch (error) {
@@ -20,7 +19,7 @@ export default function Contact({ car }) {
       }
     };
     fetchSeller();
-  }, [car.userRef]);
+  }, [listing.userRef]);
   
   return (
     <>
@@ -29,7 +28,7 @@ export default function Contact({ car }) {
           <p>
             Contact <span className='font-semibold'>{seller.username}</span>{' '}
             for{' '}
-            <span className='font-semibold'>{car.make} {car.model}</span>
+            <span className='font-semibold'>{listing.name.toLowerCase()}</span>
           </p>
           <textarea
             name='message'
@@ -42,8 +41,8 @@ export default function Contact({ car }) {
           ></textarea>
 
           <Link
-            to={`mailto:${seller.email}?subject=Regarding ${car.make} ${car.model}&body=${message}`}
-            className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
+            to={`mailto:${seller.email}?subject=Regarding ${listing.name}&body=${message}`}
+          className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
           >
             Send Message          
           </Link>
