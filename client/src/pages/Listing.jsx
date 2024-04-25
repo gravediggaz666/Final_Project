@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Navigation } from 'swiper';
+import SwiperCore from 'swiper';
 import { useSelector } from 'react-redux';
+import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
-import { FaGasPump, FaCar, FaCalendarAlt, FaCog, FaShare } from 'react-icons/fa';
+import {
+  Fawindow,
+  Fadoor,
+  FaChair,
+  FaMapMarkedAlt,
+  FaMapMarkerAlt,
+  Fasunroof,
+  FaShare,
+} from 'react-icons/fa';
 import Contact from '../components/Contact';
 
-export default function CarListing() {
+// https://sabe.io/blog/javascript-format-numbers-commas#:~:text=The%20best%20way%20to%20format,format%20the%20number%20with%20commas.
+
+export default function Listing() {
   SwiperCore.use([Navigation]);
-  const [car, setCar] = useState(null);
+  const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -18,17 +29,17 @@ export default function CarListing() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const fetchCar = async () => {
+    const fetchListing = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/car/get/${params.carId}`);
+        const res = await fetch(`/api/listing/get/${params.listingId}`);
         const data = await res.json();
         if (data.success === false) {
           setError(true);
           setLoading(false);
           return;
         }
-        setCar(data);
+        setListing(data);
         setLoading(false);
         setError(false);
       } catch (error) {
@@ -36,8 +47,8 @@ export default function CarListing() {
         setLoading(false);
       }
     };
-    fetchCar();
-  }, [params.carId]);
+    fetchListing();
+  }, [params.listingId]);
 
   return (
     <main>
@@ -45,11 +56,11 @@ export default function CarListing() {
       {error && (
         <p className='text-center my-7 text-2xl'>Something went wrong!</p>
       )}
-      {car && !loading && !error && (
+      {listing && !loading && !error && (
         <div>
           <Swiper navigation>
-            {car.imageUrls.map((url, index) => (
-              <SwiperSlide key={index}>
+            {listing.imageUrls.map((url) => (
+              <SwiperSlide key={url}>
                 <div
                   className='h-[550px]'
                   style={{
@@ -79,36 +90,53 @@ export default function CarListing() {
           )}
           <div className='flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4'>
             <p className='text-2xl font-semibold'>
-              {car.make} {car.model} - ${car.price.toLocaleString('en-US')}
+              {listing.name} - ${' '}
+              {listing.offer
+                ? listing.discountPrice.toLocaleString('en-US')
+                : listing.regularPrice.toLocaleString('en-US')}
+              {listing.type === 'rent' && ' / month'}
             </p>
             <p className='flex items-center mt-6 gap-2 text-slate-600  text-sm'>
-              <FaCalendarAlt className='text-green-700' />
-              Year: {car.year}
+              <FaMapMarkerAlt className='text-green-700' />
+              {listing.address}
             </p>
             <div className='flex gap-4'>
               <p className='bg-red-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                {car.condition}
+                {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
               </p>
+              {listing.offer && (
+                <p className='bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
+                  ${+listing.regularPrice - +listing.discountPrice} OFF
+                </p>
+              )}
             </div>
             <p className='text-slate-800'>
               <span className='font-semibold text-black'>Description - </span>
-              {car.description}
+              {listing.description}
             </p>
             <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaCar className='text-lg' />
-                {car.engine}
+                <Fadoor className='text-lg' />
+                {listing.doors > 2
+                  ? `${listing.doors} doors `
+                  : `${listing.doors} door `}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaGasPump className='text-lg' />
-                {car.fuelType}
+                <Fawindow className='text-lg' />
+                {listing.window > 2
+                  ? `${listing.window} windows `
+                  : `${listing.window} window `}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaCog className='text-lg' />
-                {car.transmission}
+                <Fasunroof className='text-lg' />
+                {listing.sunroof ? 'sunroof spot' : 'No sunroof'}
+              </li>
+              <li className='flex items-center gap-1 whitespace-nowrap '>
+                <FaChair className='text-lg' />
+                {listing.tints ? 'tints' : 'no tints'}
               </li>
             </ul>
-            {currentUser && car.userRef !== currentUser._id && !contact && (
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
               <button
                 onClick={() => setContact(true)}
                 className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'
@@ -116,7 +144,7 @@ export default function CarListing() {
                 Contact seller
               </button>
             )}
-            {contact && <Contact car={car} />}
+            {contact && <Contact listing={listing} />}
           </div>
         </div>
       )}
