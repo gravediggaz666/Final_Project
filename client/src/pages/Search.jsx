@@ -1,121 +1,240 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CarItem from '../components/CarItem';
+import ListingItem from '../components/ListingItem';
 
 export default function Search() {
   const navigate = useNavigate();
-  const [searchData, setSearchData] = useState({
-    make: '',
-    model: '',
-    minPrice: '',
-    maxPrice: '',
-    minYear: '',
-    maxYear: '',
+  const [sidebardata, setSidebardata] = useState({
+    searchTerm: '',
+    type: 'all',
+    sunroof: false,
+    tintedWindows: false,
+    keylessEntry: false,
     sort: 'created_at',
     order: 'desc',
   });
 
   const [loading, setLoading] = useState(false);
-  const [cars, setCars] = useState([]);
+  const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const makeFromUrl = urlParams.get('make');
-    const modelFromUrl = urlParams.get('model');
-    const minPriceFromUrl = urlParams.get('minPrice');
-    const maxPriceFromUrl = urlParams.get('maxPrice');
-    const minYearFromUrl = urlParams.get('minYear');
-    const maxYearFromUrl = urlParams.get('maxYear');
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    const typeFromUrl = urlParams.get('type');
+    const sunroofFromUrl = urlParams.get('sunroof');
+    const tintedWindowsFromUrl = urlParams.get('tintedWindows');
+    const keylessEntryFromUrl = urlParams.get('keylessEntry');
     const sortFromUrl = urlParams.get('sort');
     const orderFromUrl = urlParams.get('order');
 
     if (
-      makeFromUrl ||
-      modelFromUrl ||
-      minPriceFromUrl ||
-      maxPriceFromUrl ||
-      minYearFromUrl ||
-      maxYearFromUrl ||
+      searchTermFromUrl ||
+      typeFromUrl ||
+      sunroofFromUrl ||
+      tintedWindowsFromUrl ||
+      keylessEntryFromUrl ||
       sortFromUrl ||
       orderFromUrl
     ) {
-      setSearchData({
-        make: makeFromUrl || '',
-        model: modelFromUrl || '',
-        minPrice: minPriceFromUrl || '',
-        maxPrice: maxPriceFromUrl || '',
-        minYear: minYearFromUrl || '',
-        maxYear: maxYearFromUrl || '',
+      setSidebardata({
+        searchTerm: searchTermFromUrl || '',
+        type: typeFromUrl || 'all',
+        sunroof: sunroofFromUrl === 'true' ? true : false,
+        tintedWindows: tintedWindowsFromUrl === 'true' ? true : false,
+        keylessEntry: keylessEntryFromUrl === 'true' ? true : false,
         sort: sortFromUrl || 'created_at',
         order: orderFromUrl || 'desc',
       });
     }
 
-    const fetchCars = async () => {
+    const fetchListings = async () => {
       setLoading(true);
       setShowMore(false);
       const searchQuery = urlParams.toString();
-      const res = await fetch(`/api/car/search?${searchQuery}`);
+      const res = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await res.json();
       if (data.length > 8) {
         setShowMore(true);
       } else {
         setShowMore(false);
       }
-      setCars(data);
+      setListings(data);
       setLoading(false);
     };
 
-    fetchCars();
+    fetchListings();
   }, [location.search]);
 
   const handleChange = (e) => {
-    setSearchData({ ...searchData, [e.target.id]: e.target.value });
+    if (
+      e.target.id === 'all' ||
+      e.target.id === 'rent' ||
+      e.target.id === 'sale'
+    ) {
+      setSidebardata({ ...sidebardata, type: e.target.id });
+    }
+
+    if (e.target.id === 'searchTerm') {
+      setSidebardata({ ...sidebardata, searchTerm: e.target.value });
+    }
+
+    if (
+      e.target.id === 'sunroof' ||
+      e.target.id === 'tintedWindows' ||
+      e.target.id === 'keylessEntry'
+    ) {
+      setSidebardata({
+        ...sidebardata,
+        [e.target.id]:
+          e.target.checked || e.target.checked === 'true' ? true : false,
+      });
+    }
+
+    if (e.target.id === 'sort_order') {
+      const sort = e.target.value.split('_')[0] || 'created_at';
+
+      const order = e.target.value.split('_')[1] || 'desc';
+
+      setSidebardata({ ...sidebardata, sort, order });
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams();
-    urlParams.set('make', searchData.make);
-    urlParams.set('model', searchData.model);
-    urlParams.set('minPrice', searchData.minPrice);
-    urlParams.set('maxPrice', searchData.maxPrice);
-    urlParams.set('minYear', searchData.minYear);
-    urlParams.set('maxYear', searchData.maxYear);
-    urlParams.set('sort', searchData.sort);
-    urlParams.set('order', searchData.order);
+    urlParams.set('searchTerm', sidebardata.searchTerm);
+    urlParams.set('type', sidebardata.type);
+    urlParams.set('sunroof', sidebardata.sunroof);
+    urlParams.set('tintedWindows', sidebardata.tintedWindows);
+    urlParams.set('keylessEntry', sidebardata.keylessEntry);
+    urlParams.set('sort', sidebardata.sort);
+    urlParams.set('order', sidebardata.order);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
 
   const onShowMoreClick = async () => {
-    const numberOfCars = cars.length;
-    const startIndex = numberOfCars;
+    const numberOfListings = listings.length;
+    const startIndex = numberOfListings;
     const urlParams = new URLSearchParams(location.search);
     urlParams.set('startIndex', startIndex);
     const searchQuery = urlParams.toString();
-    const res = await fetch(`/api/car/search?${searchQuery}`);
+    const res = await fetch(`/api/listing/get?${searchQuery}`);
     const data = await res.json();
     if (data.length < 9) {
       setShowMore(false);
     }
-    setCars([...cars, ...data]);
+    setListings([...listings, ...data]);
   };
-
   return (
     <div className='flex flex-col md:flex-row'>
       <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen'>
         <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
-          {/* Add your search inputs here */}
+          <div className='flex items-center gap-2'>
+            <label className='whitespace-nowrap font-semibold'>
+              Search Term:
+            </label>
+            <input
+              type='text'
+              id='searchTerm'
+              placeholder='Search...'
+              className='border rounded-lg p-3 w-full'
+              value={sidebardata.searchTerm}
+              onChange={handleChange}
+            />
+          </div>
+          <div className='flex gap-2 flex-wrap items-center'>
+            <label className='font-semibold'>Type:</label>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='all'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.type === 'all'}
+              />
+              <span>fixxxing</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='rent'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.type === 'rent'}
+              />
+              <span>Rent</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='sale'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.type === 'sale'}
+              />
+              <span>Sale</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='keylessEntry'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.keylessEntry}
+              />
+              <span>keylessEntry</span>
+            </div>
+          </div>
+          <div className='flex gap-2 flex-wrap items-center'>
+            <label className='font-semibold'>Amenities:</label>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='Sunroof'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.sunroof}
+              />
+              <span>Sunroof</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='tinted windows'
+                className='w-5'
+                onChange={handleChange}
+                checked={sidebardata.tints}
+              />
+              <span>tinted windows</span>
+            </div>
+          </div>
+          <div className='flex items-center gap-2'>
+            <label className='font-semibold'>Sort:</label>
+            <select
+              onChange={handleChange}
+              defaultValue={'created_at_desc'}
+              id='sort_order'
+              className='border rounded-lg p-3'
+            >
+              <option value='regularPrice_desc'>Price high to low</option>
+              <option value='regularPrice_asc'>Price low to hight</option>
+              <option value='createdAt_desc'>Latest</option>
+              <option value='createdAt_asc'>Oldest</option>
+            </select>
+          </div>
+          <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95'>
+            Search
+          </button>
         </form>
       </div>
       <div className='flex-1'>
         <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>
-          Search results:
+          Car results:
         </h1>
         <div className='p-7 flex flex-wrap gap-4'>
-          {!loading && cars.length === 0 && (
+          {!loading && listings.length === 0 && (
             <p className='text-xl text-slate-700'>No cars found!</p>
           )}
           {loading && (
@@ -125,8 +244,10 @@ export default function Search() {
           )}
 
           {!loading &&
-            cars &&
-            cars.map((car) => <CarItem key={car._id} car={car} />)}
+            listings &&
+            listings.map((listing) => (
+              <ListingItem key={listing._id} listing={listing} />
+            ))}
 
           {showMore && (
             <button
