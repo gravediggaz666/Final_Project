@@ -7,23 +7,44 @@ import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem';
 
 export default function Home() {
-  const [carListings, setCarListings] = useState([]);
+  const [offerListings, setOfferListings] = useState([]);
+  const [saleListings, setSaleListings] = useState([]);
+  const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
-
+  console.log(offerListings);
   useEffect(() => {
-    const fetchCarListings = async () => {
+    const fetchOfferListings = async () => {
       try {
-        const res = await fetch('/api/car/get?limit=4');
+        const res = await fetch('/api/listing/get?offer=true&limit=4');
         const data = await res.json();
-        setCarListings(data);
+        setOfferListings(data);
+        fetchRentListings();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const fetchRentListings = async () => {
+      try {
+        const res = await fetch('/api/listing/get?type=rent&limit=4');
+        const data = await res.json();
+        setRentListings(data);
+        fetchSaleListings();
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchCarListings();
+    const fetchSaleListings = async () => {
+      try {
+        const res = await fetch('/api/listing/get?type=sale&limit=4');
+        const data = await res.json();
+        setSaleListings(data);
+      } catch (error) {
+        log(error);
+      }
+    };
+    fetchOfferListings();
   }, []);
-
   return (
     <div>
       {/* top */}
@@ -46,16 +67,17 @@ export default function Home() {
 
       {/* swiper */}
       <Swiper navigation>
-        {carListings &&
-          carListings.length > 0 &&
-          carListings.map((listing) => (
-            <SwiperSlide key={listing._id}>
+        {offerListings &&
+          offerListings.length > 0 &&
+          offerListings.map((listing) => (
+            <SwiperSlide>
               <div
                 style={{
                   background: `url(${listing.imageUrls[0]}) center no-repeat`,
                   backgroundSize: 'cover',
                 }}
                 className='h-[500px]'
+                key={listing._id}
               ></div>
             </SwiperSlide>
           ))}
@@ -63,14 +85,40 @@ export default function Home() {
 
       {/* listing results for cars */}
       <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
-        {carListings && carListings.length > 0 && (
+        {offerListings && offerListings.length > 0 && (
           <div className=''>
             <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-slate-600'>Recent Car Listings</h2>
-              <Link className='text-sm text-blue-800 hover:underline' to={'/search'}>Show more cars</Link>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>Show more offers</Link>
             </div>
             <div className='flex flex-wrap gap-4'>
-              {carListings.map((listing) => (
+              {offerListings.map((listing) => (
+                <ListingItem listing={listing} key={listing._id} />
+              ))}
+            </div>
+          </div>
+        )}
+        {rentListings && rentListings.length > 0 && (
+          <div className=''>
+            <div className='my-3'>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent cars for rent</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=rent'}>Show more cars for rent</Link>
+            </div>
+            <div className='flex flex-wrap gap-4'>
+              {rentListings.map((listing) => (
+                <ListingItem listing={listing} key={listing._id} />
+              ))}
+            </div>
+          </div>
+        )}
+        {saleListings && saleListings.length > 0 && (
+          <div className=''>
+            <div className='my-3'>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent cars for sale</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=sale'}>Show more cars for sale</Link>
+            </div>
+            <div className='flex flex-wrap gap-4'>
+              {saleListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))}
             </div>
