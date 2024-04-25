@@ -9,25 +9,28 @@ import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-export default function CreateCarListing() {
+export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
-    make: '',
-    model: '',
-    year: '',
-    price: 0,
-    mileage: 0,
-    fuelType: '',
-    transmission: '',
+    name: '',
     description: '',
+    type: 'rent',
+    doors: 1,
+    window: 1,
+    regularPrice: 50,
+    discountPrice: 0,
+    offer: false,
+    sunroof: false,
+    tintedWindows: false,
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  console.log(formData);
   const handleImageSubmit = (e) => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
@@ -89,10 +92,34 @@ export default function CreateCarListing() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+    if (e.target.id === 'sale' || e.target.id === 'rent') {
+      setFormData({
+        ...formData,
+        type: e.target.id,
+      });
+    }
+
+    if (
+      e.target.id === 'sunroof' ||
+      e.target.id === 'tintedWindows' ||
+      e.target.id === 'offer'
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.checked,
+      });
+    }
+
+    if (
+      e.target.type === 'number' ||
+      e.target.type === 'text' ||
+      e.target.type === 'textarea'
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -100,99 +127,48 @@ export default function CreateCarListing() {
     try {
       if (formData.imageUrls.length < 1)
         return setError('You must upload at least one image');
-      setUploading(true);
+      if (+formData.regularPrice < +formData.discountPrice)
+        return setError('Discount price must be lower than regular price');
+      setLoading(true);
       setError(false);
-      const res = await fetch('/api/car/create', {
+      const res = await fetch('/api/listing/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
-          userId: currentUser._id,
+          userRef: currentUser._id,
         }),
       });
       const data = await res.json();
-      setUploading(false);
+      setLoading(false);
       if (data.success === false) {
         setError(data.message);
       }
-      navigate(`/car/${data._id}`);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
-      setUploading(false);
+      setLoading(false);
     }
   };
-
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
-        Create a Car Listing
+        Create a Listing
       </h1>
       <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
         <div className='flex flex-col gap-4 flex-1'>
           <input
             type='text'
-            placeholder='Make'
+            placeholder='Name'
             className='border p-3 rounded-lg'
-            id='make'
+            id='name'
+            maxLength='62'
+            minLength='10'
             required
             onChange={handleChange}
-            value={formData.make}
-          />
-          <input
-            type='text'
-            placeholder='Model'
-            className='border p-3 rounded-lg'
-            id='model'
-            required
-            onChange={handleChange}
-            value={formData.model}
-          />
-          <input
-            type='number'
-            placeholder='Year'
-            className='border p-3 rounded-lg'
-            id='year'
-            required
-            onChange={handleChange}
-            value={formData.year}
-          />
-          <input
-            type='number'
-            placeholder='Price'
-            className='border p-3 rounded-lg'
-            id='price'
-            required
-            onChange={handleChange}
-            value={formData.price}
-          />
-          <input
-            type='number'
-            placeholder='Mileage'
-            className='border p-3 rounded-lg'
-            id='mileage'
-            required
-            onChange={handleChange}
-            value={formData.mileage}
-          />
-          <input
-            type='text'
-            placeholder='Fuel Type'
-            className='border p-3 rounded-lg'
-            id='fuelType'
-            required
-            onChange={handleChange}
-            value={formData.fuelType}
-          />
-          <input
-            type='text'
-            placeholder='Transmission'
-            className='border p-3 rounded-lg'
-            id='transmission'
-            required
-            onChange={handleChange}
-            value={formData.transmission}
+            value={formData.name}
           />
           <textarea
             type='text'
@@ -203,6 +179,125 @@ export default function CreateCarListing() {
             onChange={handleChange}
             value={formData.description}
           />
+          <div className='flex gap-6 flex-wrap'>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='sale'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'sale'}
+              />
+              <span>Sell</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='rent'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'rent'}
+              />
+              <span>Rent</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='sunroof'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.sunroof}
+              />
+              <span>sunroof</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='tintedWindows'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.tintedWindows}
+              />
+              <span>tintedWindows</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='offer'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.offer}
+              />
+              <span>Offer</span>
+            </div>
+          </div>
+          <div className='flex flex-wrap gap-6'>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='doors'
+                min='2'
+                max='6'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.doors}
+              />
+              <p>doors</p>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='window'
+                min='2'
+                max='8'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.window}
+              />
+              <p>windows</p>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='regularPrice'
+                min='200'
+                max='10000000'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.regularPrice}
+              />
+              <div className='flex flex-col items-center'>
+                <p>Regular price</p>
+                {formData.type === 'rent' && (
+                  <span className='text-xs'>($ / month)</span>
+                )}
+              </div>
+            </div>
+            {formData.offer && (
+              <div className='flex items-center gap-2'>
+                <input
+                  type='number'
+                  id='discountPrice'
+                  min='0'
+                  max='10000000'
+                  required
+                  className='p-3 border border-gray-300 rounded-lg'
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+                <div className='flex flex-col items-center'>
+                  <p>Discounted price</p>
+
+                  {formData.type === 'rent' && (
+                    <span className='text-xs'>($ / month)</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className='flex flex-col flex-1 gap-4'>
           <p className='font-semibold'>
@@ -240,7 +335,7 @@ export default function CreateCarListing() {
               >
                 <img
                   src={url}
-                  alt='car image'
+                  alt='listing image'
                   className='w-20 h-20 object-contain rounded-lg'
                 />
                 <button
@@ -253,10 +348,10 @@ export default function CreateCarListing() {
               </div>
             ))}
           <button
-            disabled={uploading}
+            disabled={loading || uploading}
             className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
           >
-            {uploading ? 'Creating...' : 'Create Car Listing'}
+            {loading ? 'Creating...' : 'Create listing'}
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p>}
         </div>
