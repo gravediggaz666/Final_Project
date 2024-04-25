@@ -1,23 +1,31 @@
 import { useEffect, useState } from 'react';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function UpdateCar() {
+export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const params = useParams();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
-    images: [],
-    make: '',
-    model: '',
-    year: '',
-    price: '',
-    condition: 'New',
-    mileage: '',
+    imageUrls: [],
+    name: '',
     description: '',
+    type: 'rent',
+    doors: 2,
+    windows: 2,
+    regularPrice: 50,
+    discountPrice: 0,
+    offer: false,
+    sunroof: false,
+    tints: false,
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -25,9 +33,9 @@ export default function UpdateCar() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchCar = async () => {
-      const carId = params.carId;
-      const res = await fetch(`/api/car/get/${carId}`);
+    const fetchListing = async () => {
+      const listingId = params.listingId;
+      const res = await fetch(`/api/listing/get/${listingId}`);
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
@@ -36,11 +44,11 @@ export default function UpdateCar() {
       setFormData(data);
     };
 
-    fetchCar();
+    fetchListing();
   }, []);
 
   const handleImageSubmit = (e) => {
-    if (files.length > 0 && files.length + formData.images.length < 7) {
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
       setImageUploadError(false);
       const promises = [];
@@ -52,17 +60,17 @@ export default function UpdateCar() {
         .then((urls) => {
           setFormData({
             ...formData,
-            images: formData.images.concat(urls),
+            imageUrls: formData.imageUrls.concat(urls),
           });
           setImageUploadError(false);
           setUploading(false);
         })
         .catch((err) => {
-          setImageUploadError('Image upload failed (2 MB max per image)');
+          setImageUploadError('Image upload failed (2 mb max per image)');
           setUploading(false);
         });
     } else {
-      setImageUploadError('You can only upload 6 images per car');
+      setImageUploadError('You can only upload 6 images per listing');
       setUploading(false);
     }
   };
@@ -76,7 +84,8 @@ export default function UpdateCar() {
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
         (error) => {
@@ -94,24 +103,51 @@ export default function UpdateCar() {
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
-      images: formData.images.filter((_, i) => i !== index),
+      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+    if (e.target.id === 'sale' || e.target.id === 'rent') {
+      setFormData({
+        ...formData,
+        type: e.target.id,
+      });
+    }
+
+    if (
+      e.target.id === 'sunroof' ||
+      e.target.id === 'tints' ||
+      e.target.id === 'offer'
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.checked,
+      });
+    }
+
+    if (
+      e.target.type === 'number' ||
+      e.target.type === 'text' ||
+      e.target.type === 'textarea'
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (formData.images.length < 1) return setError('You must upload at least one image');
+      if (formData.imageUrls.length < 1)
+        return setError('You must upload at least one image');
+      if (+formData.regularPrice < +formData.discountPrice)
+        return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
-      const res = await fetch(`/api/car/update/${params.carId}`, {
+      const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,82 +162,32 @@ export default function UpdateCar() {
       if (data.success === false) {
         setError(data.message);
       }
-      navigate(`/car/${data._id}`);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
     }
   };
-
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
-        Update a Car Listing
+        Update a Listing
       </h1>
       <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
         <div className='flex flex-col gap-4 flex-1'>
           <input
             type='text'
-            placeholder='Make'
+            placeholder='Name'
             className='border p-3 rounded-lg'
-            id='make'
-            maxLength='50'
+            id='name'
+            maxLength='62'
+            minLength='10'
             required
             onChange={handleChange}
-            value={formData.make}
-          />
-          <input
-            type='text'
-            placeholder='Model'
-            className='border p-3 rounded-lg'
-            id='model'
-            maxLength='50'
-            required
-            onChange={handleChange}
-            value={formData.model}
-          />
-          <input
-            type='number'
-            placeholder='Year'
-            className='border p-3 rounded-lg'
-            id='year'
-            min='1900'
-            max='2100'
-            required
-            onChange={handleChange}
-            value={formData.year}
-          />
-          <input
-            type='number'
-            placeholder='Price ($)'
-            className='border p-3 rounded-lg'
-            id='price'
-            min='0'
-            required
-            onChange={handleChange}
-            value={formData.price}
-          />
-          <select
-            id='condition'
-            className='border p-3 rounded-lg'
-            required
-            onChange={handleChange}
-            value={formData.condition}
-          >
-            <option value='New'>New</option>
-            <option value='Used'>Used</option>
-          </select>
-          <input
-            type='number'
-            placeholder='Mileage'
-            className='border p-3 rounded-lg'
-            id='mileage'
-            min='0'
-            required
-            onChange={handleChange}
-            value={formData.mileage}
+            value={formData.name}
           />
           <textarea
+            type='text'
             placeholder='Description'
             className='border p-3 rounded-lg'
             id='description'
@@ -209,6 +195,133 @@ export default function UpdateCar() {
             onChange={handleChange}
             value={formData.description}
           />
+          <input
+            type='text'
+            placeholder='Address'
+            className='border p-3 rounded-lg'
+            id='address'
+            required
+            onChange={handleChange}
+            value={formData.address}
+          />
+          <div className='flex gap-6 flex-wrap'>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='sale'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'sale'}
+              />
+              <span>Sell</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='rent'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'rent'}
+              />
+              <span>Rent</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='sunroof'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.sunroof}
+              />
+              <span>sunroof spot</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='tints'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.tints}
+              />
+              <span>tints</span>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                type='checkbox'
+                id='offer'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.offer}
+              />
+              <span>Offer</span>
+            </div>
+          </div>
+          <div className='flex flex-wrap gap-6'>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='doors'
+                min='2'
+                max='6'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.doors}
+              />
+              <p>doorss</p>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='windows'
+                min='2'
+                max='8'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.windows}
+              />
+              <p>windowss</p>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='number'
+                id='regularPrice'
+                min='50'
+                max='10000000'
+                required
+                className='p-3 border border-gray-300 rounded-lg'
+                onChange={handleChange}
+                value={formData.regularPrice}
+              />
+              <div className='flex flex-col items-center'>
+                <p>Regular price</p>
+                {formData.type === 'rent' && (
+                  <span className='text-xs'>($ / month)</span>
+                )}
+              </div>
+            </div>
+            {formData.offer && (
+              <div className='flex items-center gap-2'>
+                <input
+                  type='number'
+                  id='discountPrice'
+                  min='0'
+                  max='10000000'
+                  required
+                  className='p-3 border border-gray-300 rounded-lg'
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+                <div className='flex flex-col items-center'>
+                  <p>Discounted price</p>
+                  {formData.type === 'rent' && (
+                    <span className='text-xs'>($ / month)</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className='flex flex-col flex-1 gap-4'>
           <p className='font-semibold'>
@@ -238,15 +351,15 @@ export default function UpdateCar() {
           <p className='text-red-700 text-sm'>
             {imageUploadError && imageUploadError}
           </p>
-          {formData.images.length > 0 &&
-            formData.images.map((url, index) => (
+          {formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((url, index) => (
               <div
                 key={url}
                 className='flex justify-between p-3 border items-center'
               >
                 <img
                   src={url}
-                  alt='car image'
+                  alt='listing image'
                   className='w-20 h-20 object-contain rounded-lg'
                 />
                 <button
@@ -262,7 +375,7 @@ export default function UpdateCar() {
             disabled={loading || uploading}
             className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
           >
-            {loading ? 'Updating...' : 'Update Car Listing'}
+            {loading ? 'Updating...' : 'Update listing'}
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p>}
         </div>
