@@ -9,7 +9,7 @@ export default function Search() {
     type: 'all',
     sunroof: false,
     tintedWindows: false,
-    keylessEntry: false,
+    offer: false,
     sort: 'created_at',
     order: 'desc',
   });
@@ -24,7 +24,7 @@ export default function Search() {
     const typeFromUrl = urlParams.get('type');
     const sunroofFromUrl = urlParams.get('sunroof');
     const tintedWindowsFromUrl = urlParams.get('tintedWindows');
-    const keylessEntryFromUrl = urlParams.get('keylessEntry');
+    const offerFromUrl = urlParams.get('offer');
     const sortFromUrl = urlParams.get('sort');
     const orderFromUrl = urlParams.get('order');
 
@@ -33,7 +33,7 @@ export default function Search() {
       typeFromUrl ||
       sunroofFromUrl ||
       tintedWindowsFromUrl ||
-      keylessEntryFromUrl ||
+      offerFromUrl ||
       sortFromUrl ||
       orderFromUrl
     ) {
@@ -42,7 +42,7 @@ export default function Search() {
         type: typeFromUrl || 'all',
         sunroof: sunroofFromUrl === 'true' ? true : false,
         tintedWindows: tintedWindowsFromUrl === 'true' ? true : false,
-        keylessEntry: keylessEntryFromUrl === 'true' ? true : false,
+        offer: offer === 'true' ? true : false,
         sort: sortFromUrl || 'created_at',
         order: orderFromUrl || 'desc',
       });
@@ -82,7 +82,7 @@ export default function Search() {
     if (
       e.target.id === 'sunroof' ||
       e.target.id === 'tintedWindows' ||
-      e.target.id === 'keylessEntry'
+      e.target.id === 'offer'
     ) {
       setSidebardata({
         ...sidebardata,
@@ -107,7 +107,7 @@ export default function Search() {
     urlParams.set('type', sidebardata.type);
     urlParams.set('sunroof', sidebardata.sunroof);
     urlParams.set('tintedWindows', sidebardata.tintedWindows);
-    urlParams.set('keylessEntry', sidebardata.keylessEntry);
+    urlParams.set('offer', sidebardata.offer);
     urlParams.set('sort', sidebardata.sort);
     urlParams.set('order', sidebardata.order);
     const searchQuery = urlParams.toString();
@@ -154,7 +154,7 @@ export default function Search() {
                 onChange={handleChange}
                 checked={sidebardata.type === 'all'}
               />
-              <span>fixxxing</span>
+              <span>Rent & Sale</span>
             </div>
             <div className='flex gap-2'>
               <input
@@ -179,12 +179,12 @@ export default function Search() {
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='keylessEntry'
+                id='offer'
                 className='w-5'
                 onChange={handleChange}
-                checked={sidebardata.keylessEntry}
+                checked={sidebardata.offer}
               />
-              <span>keylessEntry</span>
+              <span>Offer</span>
             </div>
           </div>
           <div className='flex gap-2 flex-wrap items-center'>
@@ -202,12 +202,12 @@ export default function Search() {
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='tinted windows'
+                id='tints'
                 className='w-5'
                 onChange={handleChange}
                 checked={sidebardata.tints}
               />
-              <span>tinted windows</span>
+              <span>tintes</span>
             </div>
           </div>
           <div className='flex items-center gap-2'>
