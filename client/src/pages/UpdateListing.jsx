@@ -9,7 +9,7 @@ import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function CreateListing() {
+export default function UpdateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const params = useParams();
@@ -22,7 +22,6 @@ export default function CreateListing() {
     doors: 2,
     windows: 2,
     regularPrice: 50,
-    discountPrice: 0,
     keylessEntry: false,
     sunroof: false,
     tints: false,
@@ -139,12 +138,11 @@ export default function CreateListing() {
   };
 
   const handleSubmit = async (e) => {
+    // Form submission logic
     e.preventDefault();
     try {
       if (formData.imageUrls.length < 1)
         return setError('You must upload at least one image');
-      if (+formData.regularPrice < +formData.discountPrice)
-        return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
       const res = await fetch(`/api/listing/update/${params.listingId}`, {
@@ -168,6 +166,7 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
+
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
@@ -313,12 +312,7 @@ export default function CreateListing() {
                   onChange={handleChange}
                   value={formData.discountPrice}
                 />
-                <div className='flex flex-col items-center'>
-                  <p>Discounted price</p>
-                  {formData.type === 'rent' && (
-                    <span className='text-xs'>($ / month)</span>
-                  )}
-                </div>
+               
               </div>
             )}
           </div>

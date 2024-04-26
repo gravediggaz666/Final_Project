@@ -21,7 +21,6 @@ export default function CreateListing() {
     doors: 1,
     window: 1,
     regularPrice: 50,
-    discountPrice: 0,
     keylessEntry: false,
     sunroof: false,
     tintedWindows: false,
@@ -127,8 +126,6 @@ export default function CreateListing() {
     try {
       if (formData.imageUrls.length < 1)
         return setError('You must upload at least one image');
-      if (+formData.regularPrice < +formData.discountPrice)
-        return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
       const res = await fetch('/api/listing/create', {
@@ -152,6 +149,7 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
+
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
@@ -276,25 +274,7 @@ export default function CreateListing() {
                 )}
               </div>
             </div>
-            {formData.keylessEntry && (
-              <div className='flex items-center gap-2'>
-                <input
-                  type='number'
-                  id='discountPrice'
-                  min='0'
-                  max='10000000'
-                  required
-                  className='p-3 border border-gray-300 rounded-lg'
-                  onChange={handleChange}
-                  value={formData.discountPrice}
-                />
-                <div className='flex flex-col items-center'>
-                  <p>Discounted price</p>
-
-                  {formData.type === 'rent' && (
-                    <span className='text-xs'>($ / month)</span>
-                  )}
-                </div>
+            
               </div>
             )}
           </div>
