@@ -66,10 +66,10 @@ export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
-    let offer = req.query.offer;
+    let keylessEntry = req.query.keylessEntry;
 
-    if (offer === undefined || offer === 'false') {
-      offer = { $in: [false, true] };
+    if (keylessEntry === undefined || keylessEntry === 'false') {
+      keylessEntry = { $in: [false, true] };
     }
 
     let sunroof = req.query.sunroof;
@@ -98,7 +98,7 @@ export const getListings = async (req, res, next) => {
 
     const listings = await Listing.find({
       name: { $regex: searchTerm, $options: 'i' },
-      offer,
+      keylessEntry,
       sunroof,
       tints,
       type,

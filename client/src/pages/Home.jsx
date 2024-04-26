@@ -7,17 +7,17 @@ import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem';
 
 export default function Home() {
-  const [offerListings, setOfferListings] = useState([]);
+  const [keylessEntryListings, setkeylessEntryListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
-  console.log(offerListings);
+  console.log(keylessEntryListings);
   useEffect(() => {
-    const fetchOfferListings = async () => {
+    const fetchkeylessEntryListings = async () => {
       try {
-        const res = await fetch('/api/listing/get?offer=true&limit=4');
+        const res = await fetch('/api/listing/get?keylessEntry=true&limit=4');
         const data = await res.json();
-        setOfferListings(data);
+        setkeylessEntryListings(data);
         fetchRentListings();
       } catch (error) {
         console.log(error);
@@ -43,7 +43,7 @@ export default function Home() {
         log(error);
       }
     };
-    fetchOfferListings();
+    fetchkeylessEntryListings();
   }, []);
   return (
     <div>
@@ -67,9 +67,9 @@ export default function Home() {
 
       {/* swiper */}
       <Swiper navigation>
-        {offerListings &&
-          offerListings.length > 0 &&
-          offerListings.map((listing) => (
+        {keylessEntryListings &&
+          keylessEntryListings.length > 0 &&
+          keylessEntryListings.map((listing) => (
             <SwiperSlide>
               <div
                 style={{
@@ -85,14 +85,14 @@ export default function Home() {
 
       {/* listing results for cars */}
       <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
-        {offerListings && offerListings.length > 0 && (
+        {keylessEntryListings && keylessEntryListings.length > 0 && (
           <div className=''>
             <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
-              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>Show more offers</Link>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent keylessEntrys</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?keylessEntry=true'}>Show more keylessEntrys</Link>
             </div>
             <div className='flex flex-wrap gap-4'>
-              {offerListings.map((listing) => (
+              {keylessEntryListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))}
             </div>

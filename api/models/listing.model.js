@@ -42,7 +42,7 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    offer: {
+    keylessEntry: {
       type: Boolean,
       required: true,
     },
