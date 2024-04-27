@@ -207,7 +207,7 @@ export default function Search() {
                 onChange={handleChange}
                 checked={sidebardata.tints}
               />
-              <span>tintes</span>
+              <span>tints</span>
             </div>
           </div>
           <div className='flex items-center gap-2'>

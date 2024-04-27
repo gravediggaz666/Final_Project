@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 import {
-  Fawindow,
-  Fadoor,
-  FaChair,
+  FaWindowClose,
+  FaCar,
+  FaGlasses,
   FaMapMarkedAlt,
   FaMapMarkerAlt,
-  Fasunroof,
+  FaSun,
   FaShare,
 } from 'react-icons/fa';
 import Contact from '../components/Contact';
@@ -91,7 +91,7 @@ export default function Listing() {
           <div className='flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4'>
             <p className='text-2xl font-semibold'>
               {listing.name} - ${' '}
-              {listing.keylessEntry
+              {listing.offer
                 ? listing.discountPrice.toLocaleString('en-US')
                 : listing.regularPrice.toLocaleString('en-US')}
               {listing.type === 'rent' && ' / month'}
@@ -104,7 +104,7 @@ export default function Listing() {
               <p className='bg-red-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
                 {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
               </p>
-              {listing.keylessEntry && (
+              {listing.offer && (
                 <p className='bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
                   ${+listing.regularPrice - +listing.discountPrice} OFF
                 </p>
@@ -116,23 +116,23 @@ export default function Listing() {
             </p>
             <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <Fadoor className='text-lg' />
+                <FaCar className='text-lg' />
                 {listing.doors > 2
                   ? `${listing.doors} doors `
-                  : `${listing.doors} door `}
+                  : `${listing.doors} doors `}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <Fawindow className='text-lg' />
+                <FaWindowClose className='text-lg' />
                 {listing.window > 2
                   ? `${listing.window} windows `
-                  : `${listing.window} window `}
+                  : `${listing.window} windows `}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <Fasunroof className='text-lg' />
-                {listing.sunroof ? 'sunroof spot' : 'No sunroof'}
+                <FaSun className='text-lg' />
+                {listing.sunroof ? 'sunroof ' : 'No sunroof'}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaChair className='text-lg' />
+                <FaGlasses className='text-lg' />
                 {listing.tints ? 'tints' : 'no tints'}
               </li>
             </ul>

@@ -20,7 +20,7 @@ export default function CreateListing() {
     type: 'rent',
     doors: 1,
     window: 1,
-    regularPrice: 50,
+    regularPrice: 200,
     keylessEntry: false,
     sunroof: false,
     tintedWindows: false,
@@ -269,14 +269,10 @@ export default function CreateListing() {
               />
               <div className='flex flex-col items-center'>
                 <p>Regular price</p>
-                {formData.type === 'rent' && (
-                  <span className='text-xs'>($ / month)</span>
-                )}
+                {formData.type === 'rent'
+              }
               </div>
             </div>
-            
-              </div>
-            )}
           </div>
         </div>
         <div className='flex flex-col flex-1 gap-4'>

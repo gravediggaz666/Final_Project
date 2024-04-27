@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+// schema.prisma
+
+// User model
+model User {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  email     String   @unique
+  password  String
+  avatar    String?  @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cars      Car[]
+  listing   Listing[]
+}
+
+// Car model
+model Car {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  make         String
+  model        String
+  year         Int
+  color        String
+  mileage      Int
+  price        Float
+  fuelType     String
+  transmission String
+  imageUrls    String[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String    @db.ObjectId
+}
+
+// Listing model
+model Listing {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String
+  address       String
+  regularPrice  Float
+  doors         Int
+  windows       Int
+  sunroof       Boolean
+  tints         Boolean
+  type          String
+  keylessEntry  Boolean
+  imageUrls     String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userRef], references: [id])
+  userRef       String    @db.ObjectId
+}
