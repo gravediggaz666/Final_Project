@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("MONGODB_URI")
+  url      = env("MONGO")
 }
 // schema.prisma
 
@@ -51,7 +51,7 @@ model Listing {
   sunroof       Boolean
   tints         Boolean
   type          String
-  keylessEntry  Boolean
+  offer  Boolean
   imageUrls     String[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

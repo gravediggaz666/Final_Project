@@ -22,7 +22,7 @@ export default function UpdateListing() {
     doors: 2,
     windows: 2,
     regularPrice: 50,
-    keylessEntry: false,
+    offer: false,
     sunroof: false,
     tints: false,
   });
@@ -117,7 +117,7 @@ export default function UpdateListing() {
     if (
       e.target.id === 'sunroof' ||
       e.target.id === 'tints' ||
-      e.target.id === 'keylessEntry'
+      e.target.id === 'offer'
     ) {
       setFormData({
         ...formData,
@@ -247,12 +247,12 @@ export default function UpdateListing() {
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='keylessEntry'
+                id='offer'
                 className='w-5'
                 onChange={handleChange}
-                checked={formData.keylessEntry}
+                checked={formData.offer}
               />
-              <span>keylessEntry</span>
+              <span>offer</span>
             </div>
           </div>
           <div className='flex flex-wrap gap-6'>
@@ -300,7 +300,7 @@ export default function UpdateListing() {
                 )}
               </div>
             </div>
-            {formData.keylessEntry && (
+            {formData.offer && (
               <div className='flex items-center gap-2'>
                 <input
                   type='number'

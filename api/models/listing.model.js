@@ -18,6 +18,10 @@ const listingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    discountPrice: {
+      type: Number,
+      required: true,
+    },
     doors: {
       type: Number,
       required: true,
@@ -38,7 +42,7 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    keylessEntry: {
+   offer: {
       type: Boolean,
       required: true,
     },

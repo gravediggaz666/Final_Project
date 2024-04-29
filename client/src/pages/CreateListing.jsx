@@ -17,11 +17,13 @@ export default function CreateListing() {
     imageUrls: [],
     name: '',
     description: '',
+    address: '',
     type: 'rent',
     doors: 1,
     window: 1,
-    regularPrice: 200,
-    keylessEntry: false,
+    regularPrice: 50,
+    discountPrice: 0,
+    offer: false,
     sunroof: false,
     tintedWindows: false,
   });
@@ -101,7 +103,7 @@ export default function CreateListing() {
     if (
       e.target.id === 'sunroof' ||
       e.target.id === 'tintedWindows' ||
-      e.target.id === 'keylessEntry'
+      e.target.id === 'offer'
     ) {
       setFormData({
         ...formData,
@@ -126,6 +128,8 @@ export default function CreateListing() {
     try {
       if (formData.imageUrls.length < 1)
         return setError('You must upload at least one image');
+      if (+formData.regularPrice < +formData.discountPrice)
+        return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
       const res = await fetch('/api/listing/create', {
@@ -149,7 +153,6 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
-
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
@@ -176,6 +179,15 @@ export default function CreateListing() {
             required
             onChange={handleChange}
             value={formData.description}
+          />
+          <input
+            type='text'
+            placeholder='Address'
+            className='border p-3 rounded-lg'
+            id='address'
+            required
+            onChange={handleChange}
+            value={formData.address}
           />
           <div className='flex gap-6 flex-wrap'>
             <div className='flex gap-2'>
@@ -221,12 +233,12 @@ export default function CreateListing() {
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='keylessEntry'
+                id='offer'
                 className='w-5'
                 onChange={handleChange}
-                checked={formData.keylessEntry}
+                checked={formData.offer}
               />
-              <span>keylessEntry</span>
+              <span>Offer</span>
             </div>
           </div>
           <div className='flex flex-wrap gap-6'>
@@ -241,7 +253,7 @@ export default function CreateListing() {
                 onChange={handleChange}
                 value={formData.doors}
               />
-              <p>doors</p>
+              <p>Doors</p>
             </div>
             <div className='flex items-center gap-2'>
               <input
@@ -273,6 +285,25 @@ export default function CreateListing() {
               }
               </div>
             </div>
+            {formData.offer && (
+              <div className='flex items-center gap-2'>
+                <input
+                  type='number'
+                  id='discountPrice'
+                  min='0'
+                  max='10000000'
+                  required
+                  className='p-3 border border-gray-300 rounded-lg'
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+                <div className='flex flex-col items-center'>
+                  <p>Discounted price</p>
+
+                  {formData.type === 'rent' }
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className='flex flex-col flex-1 gap-4'>

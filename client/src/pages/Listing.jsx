@@ -71,6 +71,21 @@ export default function Listing() {
               </SwiperSlide>
             ))}
           </Swiper>
+          {/* Display YouTube video if available */}
+          {listing.youtubeVideoUrl && (
+            <div className="my-4">
+              <iframe
+                width="100%"
+                height="400"
+                src={listing.youtubeVideoUrl}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
+          {/* Rest of the component */}
           <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
             <FaShare
               className='text-slate-500'
