@@ -42,7 +42,7 @@ export default function ListingItem({ listing }) {
             <div className='font-bold text-xs'>
               {listing.windows > 2
                 ? `${listing.windows} windows `
-                : `${listing.windows} window `}
+                : `${listing.windows} windows `}
             </div>
           </div>
         </div>

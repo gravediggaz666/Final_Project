@@ -75,7 +75,7 @@ export default function Listing() {
             <FaShare
               className='text-slate-500'
               onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
+                navigator.clipboard.writeText(windows.location.href);
                 setCopied(true);
                 setTimeout(() => {
                   setCopied(false);
@@ -123,9 +123,9 @@ export default function Listing() {
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
                 <FaWindowClose className='text-lg' />
-                {listing.window > 2
-                  ? `${listing.window} windows `
-                  : `${listing.window} windows `}
+                {listing.windows > 2
+                  ? `${listing.windows} windows `
+                  : `${listing.windows} windows `}
               </li>
               <li className='flex items-center gap-1 whitespace-nowrap '>
                 <FaSun className='text-lg' />

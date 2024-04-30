@@ -267,7 +267,7 @@ export default function UpdateListing() {
                 onChange={handleChange}
                 value={formData.doors}
               />
-              <p>doorss</p>
+              <p>doors</p>
             </div>
             <div className='flex items-center gap-2'>
               <input
@@ -280,7 +280,7 @@ export default function UpdateListing() {
                 onChange={handleChange}
                 value={formData.windows}
               />
-              <p>windowss</p>
+              <p>windows</p>
             </div>
             <div className='flex items-center gap-2'>
               <input
