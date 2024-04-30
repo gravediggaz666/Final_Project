@@ -20,12 +20,12 @@ export default function CreateListing() {
     address: '',
     type: 'rent',
     doors: 1,
-    window: 1,
+    windows: 1,
     regularPrice: 50,
     discountPrice: 0,
     offer: false,
     sunroof: false,
-    tintedWindows: false,
+    tints: false,
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -102,7 +102,7 @@ export default function CreateListing() {
 
     if (
       e.target.id === 'sunroof' ||
-      e.target.id === 'tintedWindows' ||
+      e.target.id === 'tints' ||
       e.target.id === 'offer'
     ) {
       setFormData({
@@ -223,12 +223,12 @@ export default function CreateListing() {
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='tintedWindows'
+                id='tints'
                 className='w-5'
                 onChange={handleChange}
-                checked={formData.tintedWindows}
+                checked={formData.tints}
               />
-              <span>tintedWindows</span>
+              <span>tints</span>
             </div>
             <div className='flex gap-2'>
               <input
@@ -258,13 +258,13 @@ export default function CreateListing() {
             <div className='flex items-center gap-2'>
               <input
                 type='number'
-                id='window'
+                id='windows'
                 min='2'
                 max='8'
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
-                value={formData.window}
+                value={formData.windows}
               />
               <p>windows</p>
             </div>
@@ -272,7 +272,7 @@ export default function CreateListing() {
               <input
                 type='number'
                 id='regularPrice'
-                min='200'
+                min='50'
                 max='10000000'
                 required
                 className='p-3 border border-gray-300 rounded-lg'

@@ -8,7 +8,7 @@ export default function Search() {
     searchTerm: '',
     type: 'all',
     sunroof: false,
-    tintedWindows: false,
+    tints: false,
     offer: false,
     sort: 'created_at',
     order: 'desc',
@@ -23,7 +23,7 @@ export default function Search() {
     const searchTermFromUrl = urlParams.get('searchTerm');
     const typeFromUrl = urlParams.get('type');
     const sunroofFromUrl = urlParams.get('sunroof');
-    const tintedWindowsFromUrl = urlParams.get('tintedWindows');
+    const tintsFromUrl = urlParams.get('tints');
     const offerFromUrl = urlParams.get('offer');
     const sortFromUrl = urlParams.get('sort');
     const orderFromUrl = urlParams.get('order');
@@ -32,7 +32,7 @@ export default function Search() {
       searchTermFromUrl ||
       typeFromUrl ||
       sunroofFromUrl ||
-      tintedWindowsFromUrl ||
+      tintsFromUrl ||
       offerFromUrl ||
       sortFromUrl ||
       orderFromUrl
@@ -41,7 +41,7 @@ export default function Search() {
         searchTerm: searchTermFromUrl || '',
         type: typeFromUrl || 'all',
         sunroof: sunroofFromUrl === 'true' ? true : false,
-        tintedWindows: tintedWindowsFromUrl === 'true' ? true : false,
+        tints: tintsFromUrl === 'true' ? true : false,
         offer: offer === 'true' ? true : false,
         sort: sortFromUrl || 'created_at',
         order: orderFromUrl || 'desc',
@@ -81,7 +81,7 @@ export default function Search() {
 
     if (
       e.target.id === 'sunroof' ||
-      e.target.id === 'tintedWindows' ||
+      e.target.id === 'tints' ||
       e.target.id === 'offer'
     ) {
       setSidebardata({
@@ -106,7 +106,7 @@ export default function Search() {
     urlParams.set('searchTerm', sidebardata.searchTerm);
     urlParams.set('type', sidebardata.type);
     urlParams.set('sunroof', sidebardata.sunroof);
-    urlParams.set('tintedWindows', sidebardata.tintedWindows);
+    urlParams.set('tints', sidebardata.tints);
     urlParams.set('offer', sidebardata.offer);
     urlParams.set('sort', sidebardata.sort);
     urlParams.set('order', sidebardata.order);
