@@ -30,8 +30,8 @@ o Installation/Running Instructions –
 
 o Insights and Results – 
 
-Include here things you learned, challenges or problems
-you faced, and any details about the results you received. If you couldn’t get
-something working this would be the place to describe what you tried and what
-wouldn’t work. Feel free to embed screenshots for working and non-working
-features.
+During the development process, I encountered several challenges and learned valuable lessons. Here are some insights and results from my experience:
+
+Handling Server-Side Errors: I faced issues with server-side errors, such as 500 Internal Server Error, which required careful debugging. Through this process, I learned how to effectively troubleshoot server-side code and identify potential issues, such as misconfigured endpoints or incorrect data processing.
+Client-Server Communication: Working with client-server communication using RESTful APIs was a significant part of the project. I gained a deeper understanding of how data flows between the client and server and the importance of properly handling HTTP requests and responses.
+Authentication and Authorization: Implementing authentication and authorization features posed some challenges, especially ensuring secure access to certain endpoints. I learned about various authentication methods and best practices for securing web applications.
