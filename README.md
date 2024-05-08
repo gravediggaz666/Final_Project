@@ -23,8 +23,9 @@ o Installation/Running Instructions –
  - clone repo: url: https://github.com/gravediggaz666/Final_Project
 
 - npm install && npm install --prefix client && npm run build --prefix client
-
-- npm start
+-  create an .env file in your root & in client folder ( not in api)
+-  given the passwords for each
+-  npm start
   
   
 
