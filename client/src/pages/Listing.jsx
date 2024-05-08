@@ -9,7 +9,6 @@ import {
   FaWindowClose,
   FaCar,
   FaGlasses,
-  FaMapMarkedAlt,
   FaMapMarkerAlt,
   FaSun,
   FaShare,
